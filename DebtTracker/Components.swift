@@ -100,7 +100,45 @@ func compressImage(_ ui: UIImage, maxDim: CGFloat = 1400) -> Data? {
     return data
 }
 
-let brandGradient = LinearGradient(colors: [.indigo, .purple],
+extension Color {
+    init(hex: UInt32) {
+        self.init(.sRGB,
+                  red: Double((hex >> 16) & 0xFF) / 255,
+                  green: Double((hex >> 8) & 0xFF) / 255,
+                  blue: Double(hex & 0xFF) / 255,
+                  opacity: 1)
+    }
+}
+
+let appFontName = "ProductSans-BoldItalic"
+
+extension Font {
+    static func app(_ size: CGFloat) -> Font { .custom(appFontName, size: size) }
+}
+
+enum Theme {
+    static let bg = Color(hex: 0x0A0A0F)
+    static let card = Color(hex: 0x14151C)
+    static let stroke = Color.white.opacity(0.07)
+    static let accent = Color(hex: 0x8B7BFF)
+    static let green = Color(hex: 0x34D399)       // text on dark
+    static let red = Color(hex: 0xFB7185)         // text on dark
+    static let greenFill = Color(hex: 0x059669)   // fills with white text
+    static let redFill = Color(hex: 0xE11D48)
+    static let amberFill = Color(hex: 0xD97706)
+    static let grayFill = Color(hex: 0x4B5563)
+}
+
+extension View {
+    func cardSurface(_ radius: CGFloat = 22) -> some View {
+        self
+            .background(Theme.card, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .strokeBorder(Theme.stroke, lineWidth: 1))
+    }
+}
+
+let brandGradient = LinearGradient(colors: [Color(hex: 0x5B5BF0), Color(hex: 0x9B5CF6)],
                                    startPoint: .topLeading, endPoint: .bottomTrailing)
 
 struct PressableStyle: ButtonStyle {
@@ -118,8 +156,7 @@ struct Card<Content: View>: View {
         content
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.secondarySystemGroupedBackground),
-                        in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .cardSurface()
     }
 }
 
@@ -135,12 +172,12 @@ struct GradientButton: View {
                 Image(systemName: icon)
                 Text(title)
             }
-            .font(.headline)
+            .font(.app(17))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(brandGradient, in: Capsule())
-            .shadow(color: .indigo.opacity(enabled ? 0.35 : 0), radius: 12, y: 6)
+            .shadow(color: Theme.accent.opacity(enabled ? 0.35 : 0), radius: 12, y: 6)
             .opacity(enabled ? 1 : 0.4)
         }
         .buttonStyle(PressableStyle())
