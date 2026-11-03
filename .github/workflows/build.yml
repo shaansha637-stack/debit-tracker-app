@@ -10,6 +10,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install XcodeGen
         run: brew install xcodegen
+      - name: Inject Google URL scheme
+        run: |
+          test -f DebtTracker/GoogleService-Info.plist || { echo "ERROR: DebtTracker/GoogleService-Info.plist is missing"; exit 1; }
+          REV=$(/usr/libexec/PlistBuddy -c "Print :REVERSED_CLIENT_ID" DebtTracker/GoogleService-Info.plist) || { echo "ERROR: REVERSED_CLIENT_ID missing. Enable Google sign-in in Firebase, then re-download the plist."; exit 1; }
+          sed -i '' "s/REVERSED_CLIENT_ID_PLACEHOLDER/$REV/" project.yml
       - name: Generate project
         run: xcodegen generate
       - name: Build
