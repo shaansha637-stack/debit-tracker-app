@@ -149,37 +149,42 @@ struct ContentView: View {
 
     private var headerCard: some View {
         HStack(alignment: .top, spacing: 16) {
-            summaryColumn(icon: "arrow.down.left", title: tr("To receive"), items: sums(lent: true))
-            summaryColumn(icon: "arrow.up.right", title: tr("To pay"), items: sums(lent: false))
+            summaryColumn(icon: "arrow.down.left", title: tr("To receive"),
+                          color: Theme.green, items: sums(lent: true))
+            summaryColumn(icon: "arrow.up.right", title: tr("To pay"),
+                          color: Theme.red, items: sums(lent: false))
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(brandGradient)
-        .overlay(alignment: .topTrailing) {
-            Circle().fill(.white.opacity(0.08)).frame(width: 170, height: 170).offset(x: 60, y: -70)
-        }
+        .background(
+            LinearGradient(colors: [Theme.accent.opacity(0.18), Theme.card],
+                           startPoint: .topLeading, endPoint: .bottomTrailing)
+        )
         .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-        .shadow(color: Theme.accent.opacity(0.35), radius: 20, y: 10)
+        .overlay(RoundedRectangle(cornerRadius: 30, style: .continuous)
+            .strokeBorder(Theme.stroke, lineWidth: 1))
+        .shadow(color: Theme.accent.opacity(0.18), radius: 20, y: 10)
         .animation(.spring(), value: entries.count)
     }
 
-    private func summaryColumn(icon: String, title: String, items: [CurrencyAmount]) -> some View {
+    private func summaryColumn(icon: String, title: String, color: Color,
+                               items: [CurrencyAmount]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(color)
                     .frame(width: 28, height: 28)
-                    .background(.white.opacity(0.2), in: Circle())
-                Text(title).font(.app(15)).foregroundStyle(.white.opacity(0.85))
+                    .background(color.opacity(0.18), in: Circle())
+                Text(title).font(.app(15)).foregroundStyle(.secondary)
             }
             if items.isEmpty {
-                Text("—").font(.app(22)).foregroundStyle(.white.opacity(0.6))
+                Text("—").font(.app(22)).foregroundStyle(.secondary)
             } else {
                 ForEach(items) { it in
                     Text(money(it.amount, it.code))
                         .font(.app(26))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(color)
                         .minimumScaleFactor(0.6)
                         .lineLimit(1)
                 }
