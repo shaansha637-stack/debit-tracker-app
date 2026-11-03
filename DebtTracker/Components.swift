@@ -86,7 +86,7 @@ func amountsByCurrency(_ list: [Entry]) -> [CurrencyAmount] {
 func compressImage(_ ui: UIImage, maxDim: CGFloat = 1400) -> Data? {
     let scale = min(1, maxDim / max(ui.size.width, ui.size.height))
     let size = CGSize(width: ui.size.width * scale, height: ui.size.height * scale)
-    let format = UIGraphicsImageFormat()
+    let format = UIGraphicsImageRendererFormat.preferred()
     format.scale = 1
     let img = UIGraphicsImageRenderer(size: size, format: format).image { _ in
         ui.draw(in: CGRect(origin: .zero, size: size))
