@@ -49,16 +49,16 @@ struct AddEntryView: View {
                             } label: {
                                 HStack(spacing: 4) {
                                     Text(symbol(for: currency).trimmingCharacters(in: .whitespaces))
-                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .font(.app(30))
                                     Image(systemName: "chevron.down").font(.caption.weight(.bold))
                                 }
-                                .foregroundStyle(.indigo)
+                                .foregroundStyle(Theme.accent)
                                 .padding(.horizontal, 12).padding(.vertical, 8)
-                                .background(Color.indigo.opacity(0.12), in: Capsule())
+                                .background(Theme.accent.opacity(0.12), in: Capsule())
                             }
                             TextField("0", text: $amountText)
                                 .keyboardType(.decimalPad)
-                                .font(.system(size: 48, weight: .bold, design: .rounded))
+                                .font(.app(48))
                                 .fixedSize()
                             Spacer()
                         }
@@ -67,7 +67,7 @@ struct AddEntryView: View {
                     Card {
                         VStack(spacing: 14) {
                             HStack {
-                                Image(systemName: "person.fill").foregroundStyle(.indigo).frame(width: 24)
+                                Image(systemName: "person.fill").foregroundStyle(Theme.accent).frame(width: 24)
                                 TextField(tr("Name"), text: $person)
                             }
                             if !suggestions.isEmpty {
@@ -75,10 +75,10 @@ struct AddEntryView: View {
                                     HStack(spacing: 8) {
                                         ForEach(suggestions, id: \.self) { n in
                                             Button { person = n; haptic() } label: {
-                                                Text(n).font(.caption.weight(.semibold))
+                                                Text(n).font(.app(12))
                                                     .padding(.horizontal, 12).padding(.vertical, 6)
-                                                    .background(Color.indigo.opacity(0.12), in: Capsule())
-                                                    .foregroundStyle(.indigo)
+                                                    .background(Theme.accent.opacity(0.12), in: Capsule())
+                                                    .foregroundStyle(Theme.accent)
                                             }
                                             .buttonStyle(PressableStyle())
                                         }
@@ -87,12 +87,12 @@ struct AddEntryView: View {
                             }
                             Divider()
                             HStack {
-                                Image(systemName: "clock.fill").foregroundStyle(.indigo).frame(width: 24)
+                                Image(systemName: "clock.fill").foregroundStyle(Theme.accent).frame(width: 24)
                                 DatePicker(tr("Date & time"), selection: $date)
                             }
                             Divider()
                             HStack {
-                                Image(systemName: "note.text").foregroundStyle(.indigo).frame(width: 24)
+                                Image(systemName: "note.text").foregroundStyle(Theme.accent).frame(width: 24)
                                 TextField(tr("Note (optional)"), text: $note)
                             }
                         }
@@ -101,15 +101,15 @@ struct AddEntryView: View {
                     Card {
                         VStack(alignment: .leading, spacing: 12) {
                             Text(tr("Payment screenshot / receipt"))
-                                .font(.subheadline.weight(.semibold))
+                                .font(.app(15))
                             PhotosPicker(selection: $pickerItem, matching: .images) {
                                 Label(imageData == nil ? tr("Choose photo") : tr("Change photo"),
                                       systemImage: "photo.on.rectangle.angled")
-                                    .font(.subheadline.weight(.semibold))
+                                    .font(.app(15))
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
-                                    .background(Color.indigo.opacity(0.12), in: Capsule())
-                                    .foregroundStyle(.indigo)
+                                    .background(Theme.accent.opacity(0.12), in: Capsule())
+                                    .foregroundStyle(Theme.accent)
                             }
                             .buttonStyle(PressableStyle())
                             if let d = imageData, let ui = UIImage(data: d) {
@@ -129,7 +129,8 @@ struct AddEntryView: View {
                 .animation(.spring(response: 0.4, dampingFraction: 0.85), value: imageData)
             }
             .scrollDismissesKeyboard(.interactively)
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.bg)
+            .presentationBackground(Theme.bg)
             .navigationTitle(tr("New entry"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -152,7 +153,8 @@ struct AddEntryView: View {
             typeButton(lent: false, title: "I borrowed")
         }
         .padding(4)
-        .background(Color(.secondarySystemGroupedBackground), in: Capsule())
+        .background(Theme.card, in: Capsule())
+        .overlay(Capsule().strokeBorder(Theme.stroke, lineWidth: 1))
     }
 
     private func typeButton(lent: Bool, title: String) -> some View {
@@ -161,13 +163,13 @@ struct AddEntryView: View {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) { isLent = lent }
         } label: {
             Text(tr(title))
-                .font(.subheadline.weight(.semibold))
+                .font(.app(15))
                 .padding(.vertical, 12)
                 .frame(maxWidth: .infinity)
                 .foregroundStyle(isLent == lent ? Color.white : Color.secondary)
                 .background {
                     if isLent == lent {
-                        Capsule().fill(lent ? Color.green : Color.red)
+                        Capsule().fill(lent ? Theme.greenFill : Theme.redFill)
                             .matchedGeometryEffect(id: "type", in: ns)
                     }
                 }
