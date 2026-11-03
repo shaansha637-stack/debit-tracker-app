@@ -27,6 +27,8 @@ targets:
       properties:
         CFBundleDisplayName: Kadam
         UILaunchScreen: {}
+        UIUserInterfaceStyle: Dark
+        UIAppFonts: [ProductSans-BoldItalic.ttf]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         CFBundleURLTypes:
           - CFBundleURLSchemes: [REVERSED_CLIENT_ID_PLACEHOLDER]
