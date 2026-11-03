@@ -65,9 +65,9 @@ struct ContentView: View {
                                 Image(systemName: "tray")
                                     .font(.system(size: 44))
                                     .foregroundStyle(.secondary)
-                                Text(tr("No entries yet")).font(.headline)
+                                Text(tr("No entries yet")).font(.app(17))
                                 Text(tr("Tap + to add your first entry"))
-                                    .font(.subheadline).foregroundStyle(.secondary)
+                                    .font(.app(15)).foregroundStyle(.secondary)
                             }
                             .padding(.top, 50)
                         } else if mode == 0 {
@@ -104,16 +104,16 @@ struct ContentView: View {
                     showAdd = true
                 } label: {
                     Image(systemName: "plus")
-                        .font(.title2.weight(.bold))
+                        .font(.app(22))
                         .foregroundStyle(.white)
                         .frame(width: 62, height: 62)
                         .background(brandGradient, in: Circle())
-                        .shadow(color: .indigo.opacity(0.45), radius: 14, y: 8)
+                        .shadow(color: Theme.accent.opacity(0.45), radius: 14, y: 8)
                 }
                 .buttonStyle(PressableStyle())
                 .padding(22)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.bg)
             .navigationTitle(tr("Ledger"))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -154,8 +154,12 @@ struct ContentView: View {
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(brandGradient, in: RoundedRectangle(cornerRadius: 30, style: .continuous))
-        .shadow(color: .indigo.opacity(0.35), radius: 20, y: 10)
+        .background(brandGradient)
+        .overlay(alignment: .topTrailing) {
+            Circle().fill(.white.opacity(0.08)).frame(width: 170, height: 170).offset(x: 60, y: -70)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+        .shadow(color: Theme.accent.opacity(0.35), radius: 20, y: 10)
         .animation(.spring(), value: entries.count)
     }
 
@@ -167,14 +171,14 @@ struct ContentView: View {
                     .foregroundStyle(.white)
                     .frame(width: 28, height: 28)
                     .background(.white.opacity(0.2), in: Circle())
-                Text(title).font(.subheadline.weight(.medium)).foregroundStyle(.white.opacity(0.85))
+                Text(title).font(.app(15)).foregroundStyle(.white.opacity(0.85))
             }
             if items.isEmpty {
-                Text("—").font(.title2.weight(.bold)).foregroundStyle(.white.opacity(0.6))
+                Text("—").font(.app(22)).foregroundStyle(.white.opacity(0.6))
             } else {
                 ForEach(items) { it in
                     Text(money(it.amount, it.code))
-                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .font(.app(26))
                         .foregroundStyle(.white)
                         .minimumScaleFactor(0.6)
                         .lineLimit(1)
@@ -190,7 +194,8 @@ struct ContentView: View {
             modeButton(1, "People", "person.2.fill")
         }
         .padding(4)
-        .background(Color(.secondarySystemGroupedBackground), in: Capsule())
+        .background(Theme.card, in: Capsule())
+        .overlay(Capsule().strokeBorder(Theme.stroke, lineWidth: 1))
     }
 
     private func modeButton(_ value: Int, _ title: String, _ icon: String) -> some View {
@@ -202,7 +207,7 @@ struct ContentView: View {
                 Image(systemName: icon)
                 Text(tr(title))
             }
-            .font(.subheadline.weight(.semibold))
+            .font(.app(15))
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
             .foregroundStyle(mode == value ? Color.white : Color.secondary)
@@ -224,13 +229,13 @@ struct ContentView: View {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) { filter = tab }
                 } label: {
                     Text(tabTitle(tab))
-                        .font(.footnote.weight(.semibold))
+                        .font(.app(13))
                         .padding(.vertical, 8)
                         .frame(maxWidth: .infinity)
-                        .foregroundStyle(filter == tab ? Color.indigo : Color.secondary)
+                        .foregroundStyle(filter == tab ? Theme.accent : Color.secondary)
                         .background {
                             if filter == tab {
-                                Capsule().fill(Color.indigo.opacity(0.14))
+                                Capsule().fill(Theme.accent.opacity(0.14))
                                     .matchedGeometryEffect(id: "pill", in: ns)
                             }
                         }
@@ -246,31 +251,30 @@ struct EntryRow: View {
     var body: some View {
         HStack(spacing: 14) {
             Text(String(entry.person.prefix(1)).uppercased())
-                .font(.headline)
+                .font(.app(17))
                 .foregroundStyle(.white)
                 .frame(width: 46, height: 46)
-                .background((entry.isLent ? Color.green : Color.red).gradient, in: Circle())
+                .background((entry.isLent ? Theme.greenFill : Theme.redFill).gradient, in: Circle())
             VStack(alignment: .leading, spacing: 3) {
-                Text(entry.person).font(.headline)
+                Text(entry.person).font(.app(17))
                 Text(entry.date.formatted(date: .abbreviated, time: .shortened))
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.app(12)).foregroundStyle(.secondary)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
                 Text((entry.isLent ? "+" : "-") + money(entry.amount, entry.currency))
-                    .font(.headline)
-                    .foregroundStyle(entry.isLent ? Color.green : Color.red)
+                    .font(.app(17))
+                    .foregroundStyle(entry.isLent ? Theme.green : Theme.red)
                     .strikethrough(entry.isSettled)
                 if entry.isSettled {
-                    Text(tr("Settled")).font(.caption2.weight(.semibold))
+                    Text(tr("Settled")).font(.app(11))
                         .padding(.horizontal, 8).padding(.vertical, 3)
                         .background(Color.gray.opacity(0.2), in: Capsule())
                 }
             }
         }
         .padding(14)
-        .background(Color(.secondarySystemGroupedBackground),
-                    in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .cardSurface()
         .opacity(entry.isSettled ? 0.6 : 1)
     }
 }
