@@ -29,10 +29,10 @@ struct PersonSummary: Identifiable {
     var accent: Color {
         let pos = nets.contains { $0.amount > 0 }
         let neg = nets.contains { $0.amount < 0 }
-        if pos && neg { return .orange }
-        if pos { return .green }
-        if neg { return .red }
-        return .gray
+        if pos && neg { return Theme.amberFill }
+        if pos { return Theme.greenFill }
+        if neg { return Theme.redFill }
+        return Theme.grayFill
     }
 }
 
@@ -47,8 +47,8 @@ func groupByPerson(_ entries: [Entry]) -> [PersonSummary] {
 }
 
 func balanceInfo(_ net: Double) -> (String, Color) {
-    if net > 0 { return (tr("Owes you"), .green) }
-    if net < 0 { return (tr("You owe"), .red) }
+    if net > 0 { return (tr("Owes you"), Theme.green) }
+    if net < 0 { return (tr("You owe"), Theme.red) }
     return (tr("All settled"), .gray)
 }
 
@@ -57,35 +57,34 @@ struct PersonRow: View {
     var body: some View {
         HStack(spacing: 14) {
             Text(String(person.name.prefix(1)).uppercased())
-                .font(.headline)
+                .font(.app(17))
                 .foregroundStyle(.white)
                 .frame(width: 46, height: 46)
                 .background(person.accent.gradient, in: Circle())
             VStack(alignment: .leading, spacing: 3) {
-                Text(person.name).font(.headline)
+                Text(person.name).font(.app(17))
                 Text("\(person.entries.count) \(tr("entries"))")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.app(12)).foregroundStyle(.secondary)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 6) {
                 if person.nets.isEmpty {
-                    Text(tr("All settled")).font(.caption).foregroundStyle(.secondary)
+                    Text(tr("All settled")).font(.app(12)).foregroundStyle(.secondary)
                 } else {
                     ForEach(person.nets) { n in
                         let info = balanceInfo(n.amount)
                         VStack(alignment: .trailing, spacing: 0) {
                             Text(money(abs(n.amount), n.code))
-                                .font(.headline)
+                                .font(.app(17))
                                 .foregroundStyle(info.1)
-                            Text(info.0).font(.caption2).foregroundStyle(.secondary)
+                            Text(info.0).font(.app(11)).foregroundStyle(.secondary)
                         }
                     }
                 }
             }
         }
         .padding(14)
-        .background(Color(.secondarySystemGroupedBackground),
-                    in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .cardSurface()
     }
 }
 
@@ -104,16 +103,16 @@ struct PersonDetailView: View {
                     let s = PersonSummary(key: key, name: list[0].person, entries: list)
 
                     VStack(spacing: 14) {
-                        Text(s.name).font(.title2.weight(.bold)).foregroundStyle(.white)
+                        Text(s.name).font(.app(22)).foregroundStyle(.white)
                         if s.nets.isEmpty {
                             Text(tr("All settled")).foregroundStyle(.white.opacity(0.85))
                         } else {
                             ForEach(s.nets) { n in
                                 let info = balanceInfo(n.amount)
                                 VStack(spacing: 2) {
-                                    Text(info.0).font(.caption).foregroundStyle(.white.opacity(0.85))
+                                    Text(info.0).font(.app(12)).foregroundStyle(.white.opacity(0.85))
                                     Text(money(abs(n.amount), n.code))
-                                        .font(.system(size: 38, weight: .bold, design: .rounded))
+                                        .font(.app(38))
                                         .foregroundStyle(.white)
                                         .minimumScaleFactor(0.6)
                                         .lineLimit(1)
@@ -130,24 +129,24 @@ struct PersonDetailView: View {
                     HStack(alignment: .top, spacing: 12) {
                         Card {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(tr("You gave")).font(.caption).foregroundStyle(.secondary)
+                                Text(tr("You gave")).font(.app(12)).foregroundStyle(.secondary)
                                 if s.gaveList.isEmpty {
-                                    Text("—").font(.title3.bold()).foregroundStyle(.secondary)
+                                    Text("—").font(.app(20)).foregroundStyle(.secondary)
                                 } else {
                                     ForEach(s.gaveList) { it in
-                                        Text(money(it.amount, it.code)).font(.title3.bold()).foregroundStyle(.green)
+                                        Text(money(it.amount, it.code)).font(.app(20)).foregroundStyle(Theme.green)
                                     }
                                 }
                             }
                         }
                         Card {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(tr("You borrowed")).font(.caption).foregroundStyle(.secondary)
+                                Text(tr("You borrowed")).font(.app(12)).foregroundStyle(.secondary)
                                 if s.borrowedList.isEmpty {
-                                    Text("—").font(.title3.bold()).foregroundStyle(.secondary)
+                                    Text("—").font(.app(20)).foregroundStyle(.secondary)
                                 } else {
                                     ForEach(s.borrowedList) { it in
-                                        Text(money(it.amount, it.code)).font(.title3.bold()).foregroundStyle(.red)
+                                        Text(money(it.amount, it.code)).font(.app(20)).foregroundStyle(Theme.red)
                                     }
                                 }
                             }
@@ -155,7 +154,7 @@ struct PersonDetailView: View {
                     }
 
                     Text(tr("History"))
-                        .font(.headline)
+                        .font(.app(17))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 4)
 
@@ -174,7 +173,7 @@ struct PersonDetailView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Theme.bg)
         .navigationTitle(list.first?.person ?? "")
         .navigationBarTitleDisplayMode(.inline)
         .confirmationDialog(tr("Settle all entries?"), isPresented: $confirmSettle,
