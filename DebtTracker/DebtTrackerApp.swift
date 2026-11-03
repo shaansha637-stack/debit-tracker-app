@@ -10,6 +10,10 @@ struct DebtTrackerApp: App {
 
     init() {
         FirebaseApp.configure()
+        if let large = UIFont(name: appFontName, size: 34), let small = UIFont(name: appFontName, size: 17) {
+            UINavigationBar.appearance().largeTitleTextAttributes = [.font: large]
+            UINavigationBar.appearance().titleTextAttributes = [.font: small]
+        }
         _auth = StateObject(wrappedValue: AuthManager())
     }
 
@@ -18,6 +22,8 @@ struct DebtTrackerApp: App {
             RootView()
                 .environmentObject(auth)
                 .environmentObject(sync)
+                .preferredColorScheme(.dark)
+                .font(.app(17))
                 .onOpenURL { GIDSignIn.sharedInstance.handle($0) }
         }
         .modelContainer(for: Entry.self)
